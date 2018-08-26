@@ -1,4 +1,5 @@
 import get_libgen_data
+import mail
 import requests
 import html5lib
 import sys
@@ -39,10 +40,16 @@ request_book = requests.get(get_libgen_data.get_download_url(libgen_data[selecti
 
 print "Saving Book..."
 book_name = libgen_data[selection]["title"] + "." + libgen_data[selection]["extension"]
+path = "./" + book_name
 
 with open(book_name, 'wb') as handle:
     for block in request_book.iter_content(4096):
         handle.write(block)
 
 
+print "Sending Book to your Kindle..."
+
+mail.send_to_kindle(book_name, path)
+
+print "Book sent to your kindle ! Enjoy"
 

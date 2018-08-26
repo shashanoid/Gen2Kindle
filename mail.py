@@ -1,34 +1,37 @@
-from email.mime.multipart import MIMEMultipart
-from email.MIMEImage import MIMEImage
-from email.mime.text import MIMEText
 import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.MIMEBase import MIMEBase
+from email import encoders
  
-# create message object instance
-msg = MIMEMultipart()
+fromaddr = "shashwat@greenlie.org"
+toaddr = "shashwat_85@kindle.com"
  
+
+
+def send_to_kindle(subject, path):
+	msg = MIMEMultipart()
+	msg['From'] = fromaddr
+	msg['To'] = toaddr
+	msg['Subject'] = subject
+
+	body = ""
+
+	msg.attach(MIMEText(body, 'plain'))
  
-# setup the parameters of the message
-password = "your_password"
-msg['From'] = "your_address"
-msg['To'] = "to_address"
-msg['Subject'] = "Photos"
+	filename = subject
+	attachment = open(path, "rb")
  
-# attach image to message body
-msg.attach(MIMEImage(file("google.jpg").read()))
+	part = MIMEBase('application', 'octet-stream')
+	part.set_payload((attachment).read())
+	encoders.encode_base64(part)
+	part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
  
+	msg.attach(part)
  
-# create server
-server = smtplib.SMTP('smtp.gmail.com: 587')
- 
-server.starttls()
- 
-# Login Credentials for sending the mail
-server.login(msg['From'], password)
- 
- 
-# send the message via the server.
-server.sendmail(msg['From'], msg['To'], msg.as_string())
- 
-server.quit()
- 
-print "successfully sent email to %s:" % (msg['To'])
+	server = smtplib.SMTP('smtp.live.com', 587)
+	server.starttls()
+	server.login(fromaddr, "")
+	text = msg.as_string()
+	server.sendmail(fromaddr, toaddr, text)
+	server.quit()
