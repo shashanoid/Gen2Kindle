@@ -5,7 +5,7 @@ Download the repo and
 ```
 pip install -r requirements.txt
 ```
-## Setup emailing
+## Setup emailing [Upload to kindle via email]
 Edit 'mail.py' and emailing requirements under the mentioned comments
 
 ## Running
