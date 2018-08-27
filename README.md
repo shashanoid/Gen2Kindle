@@ -3,7 +3,7 @@
 ## Installation
 Download the repo and
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 ## Setup emailing
 Edit 'mail.py' and emailing requirements under the mentioned comments
