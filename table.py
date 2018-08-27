@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
@@ -33,3 +34,12 @@ server.login(fromaddr, "")
 text = msg.as_string()
 server.sendmail(fromaddr, toaddr, text)
 server.quit()
+=======
+import os
+import subprocess
+
+cmd = "./kindlegen"
+process = subprocess.Popen([cmd, './shit.epub'])
+process.wait()
+print "ok"
+>>>>>>> c9186c7... Now can send files in all formats

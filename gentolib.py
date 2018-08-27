@@ -7,6 +7,8 @@ import html5lib
 from bs4 import BeautifulSoup
 from tabulate import tabulate
 import pydoc
+import os
+import subprocess
 
 
 search_term = ' '.join(sys.argv[1:])
@@ -30,7 +32,7 @@ for x in libgen_data:
 
 	print "[%d] %s - %s [%s pages (%s)] - %s %s \n" % (x, title, author, num_pages, year_published, size, extension) + "\n"
 
-print "Please enter the index of the book you want"
+print "Please enter the index of the book you want or press any other key to search again"
 selection = int(raw_input("Index > "))
 
 print "\nDownloading book..."
@@ -41,15 +43,39 @@ request_book = requests.get(get_libgen_data.get_download_url(libgen_data[selecti
 print "Saving Book..."
 book_name = libgen_data[selection]["title"] + "." + libgen_data[selection]["extension"]
 path = "./" + book_name
+output_name = libgen_data[selection]["title"] + ".mobi"
+
+output_path = "./" + output_name
 
 with open(book_name, 'wb') as handle:
     for block in request_book.iter_content(4096):
         handle.write(block)
 
+send_mail = raw_input("Do you wish to send it to your kindle? (y/n) :> ")
 
-print "Sending Book to your Kindle..."
+#downloaded file extension
+extension = os.path.splitext(book_name)[1]
 
-mail.send_to_kindle(book_name, path)
+def convert_and_send_mobi():
+	print "Converting to mobi"
+	cmd = './kindlegen'
+	process = subprocess.Popen([cmd, path])
+	process.wait()
+	mail.send_to_kindle(output_name, output_path, None)
+	print "File sent to kindle, please give it some time to appear"
 
-print "Book sent to your kindle ! Enjoy"
+if send_mail == "y":
+	if extension == '.pdf':
+		mail.send_to_kindle('Convert', path, libgen_data[selection]["title"])
+		print "PDF converted and sent to your kindle, please give it some time to appear since its converted on amazon's end."
+	elif extension == '.epub':
+		convert_and_send_mobi()
+	else:
+		mail.send_to_kindle(book_name, output_path, None)
+		print "Sent to your kindle, please give it some time to appear"
+else:
+	print "Book saved."
+
+
+
 
