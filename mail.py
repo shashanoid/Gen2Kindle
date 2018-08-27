@@ -7,7 +7,7 @@ from email import encoders
 #Your email which is registred in Kindle
 fromaddr = ""
 
-#Your kindle email
+#Your kindle email [@kindle.com]
 toaddr = ""
  
 
