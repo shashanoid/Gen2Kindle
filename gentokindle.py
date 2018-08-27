@@ -1,3 +1,4 @@
+#!/usr/local/bin/python
 import get_libgen_data
 import mail
 import requests
@@ -5,8 +6,6 @@ import html5lib
 import sys
 import html5lib
 from bs4 import BeautifulSoup
-from tabulate import tabulate
-import pydoc
 import os
 import subprocess
 
