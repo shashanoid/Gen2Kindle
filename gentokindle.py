@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 import os
 import subprocess
 
+search = ""
 
-def main():
-	search_term = ' '.join(sys.argv[1:])
+def main(search_term):
 	if not search_term:
 		print "Please provide a search term"
 	else:
@@ -35,58 +35,66 @@ def main():
 		
 			print "[%d] %s - %s [%s pages (%s)] - %s %s \n" % (x, title, author, num_pages, year_published, size, extension) + "\n"
 		
-		print "Please enter the index of the book you want or press any other key to search again"
-		selection = int(raw_input("Index > "))
 		
-		print "\nDownloading book..."
+		new_search = raw_input("[Enter] to continue or search again: ")
+
+		if new_search != "":
+			search_term = ''.join(new_search)
+			main(search_term)
+		else:
+			print "Please enter the index of the book you want or press any other key to search again"
+			selection = int(raw_input("Index > "))
 		
-		request_book = requests.get(get_libgen_data.get_download_url(libgen_data[selection]["download_link"]), stream=True)
+			print "\nDownloading book..."
+		
+			request_book = requests.get(get_libgen_data.get_download_url(libgen_data[selection]["download_link"]), stream=True)
 		
 		
-		print "Saving Book..."
-		book_name = libgen_data[selection]["title"] + "." + libgen_data[selection]["extension"]
-		path = "./" + book_name
-		output_name = libgen_data[selection]["title"] + ".mobi"
+			print "Saving Book..."
+			book_name = libgen_data[selection]["title"] + "." + libgen_data[selection]["extension"]
+			path = "./" + book_name
+			output_name = libgen_data[selection]["title"] + ".mobi"
 		
-		output_path = "./" + output_name
-		
-		with open(book_name, 'wb') as handle:
-		    for block in request_book.iter_content(4096):
-		        handle.write(block)
-		
-		send_mail = raw_input("Do you wish to send it to your kindle? (y/n) :> ")
-		
-		#downloaded file extension
-		extension = os.path.splitext(book_name)[1]
-		
-		def convert_and_send_mobi():
-			print "Converting to mobi"
-			cmd = './kindlegen'
-			process = subprocess.Popen([cmd, path])
-			process.wait()
-			mail.send_to_kindle(output_name, output_path, None)
-			print "File sent to kindle, please give it some time to appear"
-		
-		if send_mail == "y":
-			if extension == '.pdf':
-				mail.send_to_kindle('Convert', path, libgen_data[selection]["title"])
-				print "PDF converted and sent to your kindle, please give it some time to appear since its converted on amazon's end."
-			elif extension == '.epub':
-				convert_and_send_mobi()
+			output_path = "./" + output_name
+
+			with open(book_name, 'wb') as handle:
+				for block in request_book.iter_content(4096):
+					handle.write(block)
+			
+			send_mail = raw_input("Do you wish to send it to your kindle? (y/n) :> ")
+			
+			#downloaded file extension
+			extension = os.path.splitext(book_name)[1]
+			
+			def convert_and_send_mobi():
+				print "Converting to mobi"
+				cmd = './kindlegen'
+				process = subprocess.Popen([cmd, path])
+				process.wait()
+				mail.send_to_kindle(output_name, output_path, None)
+				print "File sent to kindle, please give it some time to appear"
+			
+			if send_mail == "y":
+				if extension == '.pdf':
+					mail.send_to_kindle('Convert', path, libgen_data[selection]["title"])
+					print "PDF converted and sent to your kindle, please give it some time to appear since its converted on amazon's end."
+				elif extension == '.epub':
+					convert_and_send_mobi()
+				else:
+					mail.send_to_kindle(book_name, output_path, None)
+					print "Sent to your kindle, please give it some time to appear"
 			else:
-				mail.send_to_kindle(book_name, output_path, None)
-				print "Sent to your kindle, please give it some time to appear"
-		else:
-			print "Book saved."
-
-		search_again = raw_input("Enter 'exit' or search again: ")
-
-		if search_again != "exit":
-			main()
-		else:
-			return None
+				print "Book saved."
+	
+			search_again = raw_input("Enter 'exit' or search again: ")
+	
+			if search_again != "exit":
+				main()
+			else:
+				return None
 
 
 
 if __name__ == '__main__':
-    main()
+	search_term = ' '.join(sys.argv[1:])
+	main(search_term)
