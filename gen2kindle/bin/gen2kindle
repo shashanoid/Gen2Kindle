@@ -23,7 +23,7 @@ def check_emailing():
 
 def main(search_term):
 	if not search_term:
-		print "Please provide a search term as argument."
+		print "Please provide a search term as argument -> gen2kindle <book-name>"
 	else:
 		libgen_url = "http://libgen.io/search.php?req=" + search_term
 		
