@@ -45,16 +45,32 @@ def main(search_term):
 		
 			print "[%d] %s - %s [%s pages (%s)] - %s %s \n" % (x, title, author, num_pages, year_published, size, extension) + "\n"
 		
-		
+
 		new_search = raw_input("Search again or [Enter] to continue: ")
+
+		try:
+			if isinstance(int(new_search), int):
+				print "Wrong input \n"
+				new_search = raw_input("Search again or [Enter] to continue: ")
+		except ValueError:
+			new_search = new_search
 
 		if new_search != "":
 			search_term = ''.join(new_search)
 			main(search_term)
 		else:
 			print "Please enter the index of the book you want or press any other key to search again"
-			selection = int(raw_input("Index > "))
+
+			index_selection = raw_input("Index > ")
+			
+			try:
+				selection = int(index_selection)
+			except ValueError:
+				print "Wrong input \n"
+				print "You had to provide the index of the book."
+				return None			
 		
+
 			print "\nDownloading book..."
 		
 			request_book = requests.get(get_libgen_data.get_download_url(libgen_data[selection]["download_link"]), stream=True)
