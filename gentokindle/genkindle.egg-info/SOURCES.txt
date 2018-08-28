@@ -1,0 +1,12 @@
+setup.py
+bin/gentokindle
+bin/get_libgen_data.py
+bin/kindle_mail.py
+bin/kindlegen
+genkindle.egg-info/PKG-INFO
+genkindle.egg-info/SOURCES.txt
+genkindle.egg-info/dependency_links.txt
+genkindle.egg-info/not-zip-safe
+genkindle.egg-info/requires.txt
+genkindle.egg-info/top_level.txt
+gentokindle/__init__.py

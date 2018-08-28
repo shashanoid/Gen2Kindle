@@ -1,6 +1,9 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
+
 import get_libgen_data
-import mail
+from tqdm import tqdm
+import math
+import kindle_mail
 import requests
 import html5lib
 import sys
@@ -11,9 +14,16 @@ import subprocess
 
 search = ""
 
+def check_emailing():
+	if kindle_mail.toaddr != "":
+		return True
+	else:
+		return False
+
+
 def main(search_term):
 	if not search_term:
-		print "Please provide a search term"
+		print "Please provide a search term as argument."
 	else:
 		libgen_url = "http://libgen.io/search.php?req=" + search_term
 		
@@ -36,7 +46,7 @@ def main(search_term):
 			print "[%d] %s - %s [%s pages (%s)] - %s %s \n" % (x, title, author, num_pages, year_published, size, extension) + "\n"
 		
 		
-		new_search = raw_input("[Enter] to continue or search again: ")
+		new_search = raw_input("Search again or [Enter] to continue: ")
 
 		if new_search != "":
 			search_term = ''.join(new_search)
@@ -48,7 +58,8 @@ def main(search_term):
 			print "\nDownloading book..."
 		
 			request_book = requests.get(get_libgen_data.get_download_url(libgen_data[selection]["download_link"]), stream=True)
-		
+			total_size = int(request_book.headers.get('content-length', 0)); 
+
 		
 			print "Saving Book..."
 			book_name = libgen_data[selection]["title"] + "." + libgen_data[selection]["extension"]
@@ -58,38 +69,55 @@ def main(search_term):
 			output_path = "./" + output_name
 
 			with open(book_name, 'wb') as handle:
-				for block in request_book.iter_content(4096):
+				for block in tqdm(request_book.iter_content(4096), total=math.ceil(total_size//4096) , unit='KB', unit_scale=True):
 					handle.write(block)
 			
-			send_mail = raw_input("Do you wish to send it to your kindle? (y/n) :> ")
+			send_mail = raw_input("Do you wish upload to your kindle? (y/n) :> ")
 			
 			#downloaded file extension
 			extension = os.path.splitext(book_name)[1]
 			
 			def convert_and_send_mobi():
 				print "Converting to mobi"
-				cmd = './kindlegen'
+				cmd = 'kindlegen'
 				process = subprocess.Popen([cmd, path])
 				process.wait()
-				mail.send_to_kindle(output_name, output_path, None)
-				print "File sent to kindle, please give it some time to appear"
+
+				if check_emailing() == True:
+					kindle_mail.send_to_kindle(output_name, output_path, None)
+					print "File sent to kindle, please give it some time to appear"
+				else:
+					print "\n"
+					print "Mailing not configured. Find kindle_mail.py using: \n -- 'which kindle_mail.py' then open the file and edit email settings with your fav editor \n"
+
+				
 			
 			if send_mail == "y":
 				if extension == '.pdf':
-					mail.send_to_kindle('Convert', path, libgen_data[selection]["title"])
-					print "PDF converted and sent to your kindle, please give it some time to appear since its converted on amazon's end."
+					if check_emailing() == True:
+						kindle_mail.send_to_kindle('Convert', path, libgen_data[selection]["title"])
+						print "PDF converted and sent to your kindle, please give it some time to appear since its converted on amazon's end."
+					else:
+						print "\n"
+						print "Mailing not configured. Find kindle_mail.py using: \n -- 'which kindle_mail.py' then open the file and edit email settings with your fav editor \n"
+
 				elif extension == '.epub':
 					convert_and_send_mobi()
 				else:
-					mail.send_to_kindle(book_name, output_path, None)
-					print "Sent to your kindle, please give it some time to appear"
+					if check_emailing() == True:
+						kindle_mail.send_to_kindle(book_name, output_path, None)
+						print "Sent to your kindle, please give it some time to appear"
+					else:
+						print "\n"
+						print "Mailing not configured. Find kindle_mail.py using: \n -- 'which kindle_mail.py' then open the file and edit email settings with your fav editor \n"
+						
 			else:
 				print "Book saved."
 	
 			search_again = raw_input("Enter 'exit' or search again: ")
 	
 			if search_again != "exit":
-				main()
+				main(search_again)
 			else:
 				return None
 

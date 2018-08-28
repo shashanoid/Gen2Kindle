@@ -24,7 +24,6 @@ def get_libgen_data(soup):
 
 		data.update({each_row: {'author': author, 'title':title, 'publisher':publisher, 'year_published':year_published, 
 					'num_pages':num_pages, 'extension': extension, 'download_link': download_link, 'size': size}})
-
 		
 	return data
 

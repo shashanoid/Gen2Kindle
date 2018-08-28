@@ -1,13 +1,18 @@
+# Purpose of this file is to upload the downloaded book to your kindle via email
+# Please Read the three comments mentioned below and fill those blanks to set up uploading to kindle
+# 
+
+
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.MIMEBase import MIMEBase
 from email import encoders
 
-#Your email which is registred in Kindle
+#The email which your kindle is registered with -- Approved Personal Document E-mail List 
 fromaddr = ""
 
-#Your kindle email [@kindle.com]
+#Your kindle email [@kindle.com] - Find under [Send-to-Kindle E-Mail Settings]
 toaddr = ""
  
 
@@ -36,9 +41,13 @@ def send_to_kindle(subject, path, file_name):
  
 	msg.attach(part)
  
+ 	### IMPORTANT ###
+ 	# Microsoft Live = smtp.live.com, For gmail use smtp.gmail.com and so on..
+
 	server = smtplib.SMTP('smtp.live.com', 587)
 	server.starttls()
-	#Your password of the kindle email you registered with
+
+	#Password of the email your kindle is registed with
 	server.login(fromaddr, "")
 	text = msg.as_string()
 	server.sendmail(fromaddr, toaddr, text)
