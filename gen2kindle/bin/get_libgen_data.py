@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 
 def get_libgen_data(soup):
-	body = soup.find_all('tbody')
+	body = soup.find_all('table')
 	one = body[2]
 	counter = len(one.find_all('tr'))
 	data = {}
