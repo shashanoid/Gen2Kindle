@@ -24,7 +24,7 @@ setup(name='gen2kindle',
 					'tqdm==4.25.0',
 					'requests==2.19.1',
 					'six==1.11.0',
-					'urllib3==1.23',
+					'urllib3==1.24.2',
 					'webencodings==0.5.1',
 			],
 			zip_safe=False)
