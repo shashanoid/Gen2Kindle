@@ -17,7 +17,7 @@ setup(name='gen2kindle',
 			scripts=['bin/gen2kindle', 'bin/get_libgen_data.py', 'bin/kindlegen', 'bin/kindle_mail.py'],
 			install_requires=[
 					'beautifulsoup4==4.6.3',
-					'certifi==2018.8.24',
+					'certifi==2022.12.7',
 					'chardet==3.0.4',
 					'html5lib==1.0.1',
 					'idna==2.7',
